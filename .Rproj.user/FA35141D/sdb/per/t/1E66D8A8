@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"bamapr\"\nauthor: \"daigazi / 496199017@qq.com\"\ndate: \"2017年3月25日\"\noutput: html_document\n---\n\n\n\n\n## bampar包是干什么的\nbamapr=baidu map API+ amap API,试图提供百度地图和高德地图API的数据抓取和呈现。\n\n## bampar包目前有什么功能\n  - 批量抓取POI信息（如公交站点）\n  - 批量抓取公交路线\n  - 批量抓取路网信息（以福鼎为例）\n  - 批量抓取拥堵情况\n  - 叠加事故标志\n  - 叠加施工标志\n  - OD对期望图\n  \n## bamapr的一些展示\n\n```{r setup, include=FALSE}\nknitr::opts_chunk$set(echo = F,warning = F,fig.align='center')\nlibrary(REmap)\nlibrary(bamapr)\nlibrary(wordcloud2)\nlibrary(flexdashboard)\n```\n\n### 公交站点\n![](demo/p1.png)\n\n### 公交路线\n![](demo/p2.png)\n\n### 批量抓取路网信息\n![](demo/p3.png)\n\n### 叠加事故标志\n![](demo/p4.png)\n\n### 叠加施工标志\n![](demo/p5.png)\n\n### OD对期望图\n![](demo/p6.png)\n\n## 应用场景\n- 公交专项规划\n- 选址规划\n- 叠加实时公交信息的公交到达率分析\n- 各个时段Top10拥堵路段\n- 标定城市交通仿真模型参数\n- 反向校核道路修建、改造后的效果\n- 出行服务\n- 基于百度热力图的重庆职住研究 <http://www.udparty.com/topic/1568.html/>\n- 其他.....\n\n## 下一步工作\n- 完善功能：抓取拥堵路段的经纬度信息（50%）\n- 完善功能：完善路网连通性\n- 完善功能：导入CAD道路平面成果\n- 数据挖掘......\n",
+    "created" : 1490453609061.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3880923490",
+    "id" : "1E66D8A8",
+    "lastKnownWriteTime" : 1490454403,
+    "last_content_update" : 1490454403078,
+    "path" : "C:/Users/DAI/git/bamapr/readme.Rmd",
+    "project_path" : "readme.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
