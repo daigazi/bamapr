@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"bamapr@fuzhou\"\noutput:\n  flexdashboard::flex_dashboard:\n    orientation: columns\n    vertical_layout: fill\n    \n\n---\n\n```{r setup, include=FALSE}\nlibrary(flexdashboard)\nlibrary(bamapr)\nlibrary(REmap)\nlibrary(wordcloud2)\n```\n\nColumn {data-width=650}\n-----------------------------------------------------------------------\n\n### 福州实时动态交通\n\n```{r,warning=FALSE}\ndata(fzdat)\nset.seed(1234)\nindex=which(threeRing_n$line$color==\"#FF0000\")\npointData = data.frame(sample(threeRing_n$point$index[index],2),\n                       color = c(rep(\"red\",2)))\nremap.init()\np=remapB(center = get_city_coord(\"福州\"),\n       zoom = 14,\n       title = \"福州三环\",\n       color = \"googlelite\",\n       markPointData = pointData,\n       markPointTheme = markPointControl(symbol = 'circle',\n                                         symbolSize = 15,\n                                         effect = T),\n       markLineData = threeRing_n[[2]],\n       markLineTheme = markLineControl(smoothness = 0,lineWidth=3,\n                                       effect = F,lineType = \"solid\",\n                                       symbolSize = c(0,0)),\n       geoData = threeRing_n$point[c(\"Lon\",\"Lat\",\"index\")])\nknitrREmap(p,local = F,height = \"100%\")\n```\n\nColumn {data-width=350}\n-----------------------------------------------------------------------\n\n### 拥堵路段词云\n\n```{r,warning=FALSE}\n# location='119.229335,26.122166;119.59875,25.87036'\n# df=getTrafficStatusPlus(location = location)\n# index=grep(trafficstatus$description,pattern = \"缓慢|拥堵|堵塞\")\n# a=trafficstatus$description[index]\n# b=unlist(strsplit(a,split = \"；\"))\n# index=grep(b,pattern = \"缓慢|拥堵|堵塞\")\n# c=b[index]\n# N=length(c)\n# d=unlist(strsplit(c,split = \"：\"))[seq(from=1,to=N*2,by=2)]\n# df1=table(d)\ndata(trafficstatus)\ndf=trafficstatus[!trafficstatus$expedite==\"100.00%\",]\ntra_list=list()\nfor(i in 1:nrow(df)){\n        a=unlist(strsplit(df$description[i],split = \"；\"))\n        tra_list[[i]]=data.frame(road=a,\n        expedite=rep(df$expedite[i],length(a)),\n        congested=rep(df$congested[i],length(a)),\n        blocked  =rep(df$blocked  [i],length(a)),\n        unknown  =rep(df$unknown  [i],length(a)),\n        stringsAsFactors = F)\n}\ndfx=do.call(rbind,tra_list)\ndfx$expedite=gsub(pattern = \"\\\\%\",replacement = \"\",x = dfx$expedite)\ndfx$road=unlist(strsplit(dfx$road,split = \"：\"))[seq(1, by = 2,length.out = nrow(dfx))]\ndfx$expedite=100-as.numeric(dfx$expedite)\nprint(paste(\"路况监控时段\",df$time[1],sep=\"\"))\n\nwordcloud2(dfx,size = 0.3)\n```\n\n\n### 拥堵路段畅通比例\n\n```{r}\n\nindex=which.max(dfx$expedite)\ngauge(100-dfx[index,2], min = 0, max = 100, symbol = '%', gaugeSectors(\n  success = c(90, 100), warning = c(61, 89), danger = c(0, 60)\n))\n```\n\n\n\n",
+    "created" : 1483981533535.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1769781116",
+    "id" : "91017D5A",
+    "lastKnownWriteTime" : 1484026013,
+    "last_content_update" : 1484026043141,
+    "path" : "C:/Users/DAI/Desktop/bamapr/demo/knitrmap.Rmd",
+    "project_path" : "demo/knitrmap.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,95 @@
+---
+title: "bamapr@fuzhou"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    
+
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(bamapr)
+library(REmap)
+library(wordcloud2)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### 福州实时动态交通
+
+```{r,warning=FALSE}
+data(fzdat)
+set.seed(1234)
+index=which(threeRing_n$line$color=="#FF0000")
+pointData = data.frame(sample(threeRing_n$point$index[index],2),
+                       color = c(rep("red",2)))
+remap.init()
+p=remapB(center = get_city_coord("福州"),
+       zoom = 14,
+       title = "福州三环",
+       color = "googlelite",
+       markPointData = pointData,
+       markPointTheme = markPointControl(symbol = 'circle',
+                                         symbolSize = 15,
+                                         effect = T),
+       markLineData = threeRing_n[[2]],
+       markLineTheme = markLineControl(smoothness = 0,lineWidth=3,
+                                       effect = F,lineType = "solid",
+                                       symbolSize = c(0,0)),
+       geoData = threeRing_n$point[c("Lon","Lat","index")])
+knitrREmap(p,local = F,height = "100%")
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### 拥堵路段词云
+
+```{r,warning=FALSE}
+# location='119.229335,26.122166;119.59875,25.87036'
+# df=getTrafficStatusPlus(location = location)
+# index=grep(trafficstatus$description,pattern = "缓慢|拥堵|堵塞")
+# a=trafficstatus$description[index]
+# b=unlist(strsplit(a,split = "；"))
+# index=grep(b,pattern = "缓慢|拥堵|堵塞")
+# c=b[index]
+# N=length(c)
+# d=unlist(strsplit(c,split = "："))[seq(from=1,to=N*2,by=2)]
+# df1=table(d)
+data(trafficstatus)
+df=trafficstatus[!trafficstatus$expedite=="100.00%",]
+tra_list=list()
+for(i in 1:nrow(df)){
+        a=unlist(strsplit(df$description[i],split = "；"))
+        tra_list[[i]]=data.frame(road=a,
+        expedite=rep(df$expedite[i],length(a)),
+        congested=rep(df$congested[i],length(a)),
+        blocked  =rep(df$blocked  [i],length(a)),
+        unknown  =rep(df$unknown  [i],length(a)),
+        stringsAsFactors = F)
+}
+dfx=do.call(rbind,tra_list)
+dfx$expedite=gsub(pattern = "\\%",replacement = "",x = dfx$expedite)
+dfx$road=unlist(strsplit(dfx$road,split = "："))[seq(1, by = 2,length.out = nrow(dfx))]
+dfx$expedite=100-as.numeric(dfx$expedite)
+print(paste("路况监控时段",df$time[1],sep=""))
+
+wordcloud2(dfx,size = 0.3)
+```
+
+
+### 拥堵路段畅通比例
+
+```{r}
+
+index=which.max(dfx$expedite)
+gauge(100-dfx[index,2], min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(90, 100), warning = c(61, 89), danger = c(0, 60)
+))
+```
+
+
+

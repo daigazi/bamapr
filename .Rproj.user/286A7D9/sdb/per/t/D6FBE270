@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#' get road ployline coordinate by road id from amap\n#'\n#'\n#' get road ployline from amap,default will convert to baidu coordinate,and will\n#' convert to linedata and pointdata to show within REmap::remapb()\n#'\n#'\n#' @param id road'id,can get by function getSearchPlus\n#' @param tobaidu  whether convert amap to baidu coodinate,default to be T\n#' @return a list within linedata and geodata\n#' @export  getRoadCoor\n#' @importFrom RCurl getURL\n#' @examples\n#' \\dontrun{\n#' rectangel=matrix(c(120.208958,27.327244,120.232389,27.30612),byrow = T,nrow = 2) #test\n#' df=getSearchPlus(mtx = rectangel,word = '道路',types = '19',Tobaidu = F)\n#' str(df)\n#' x=getroadcoor()\n#'  }\n\ngetRoadCoor <- function(id = \"B0FFGQOZO5\", tobaidu = T,name=\"hhh\") {\n        myheader <- c(`User-Agent` = \"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0\",\n                      Accept = \"*/*\", `Accept-Language` = \"zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3\",\n                      Connection = \"keep-alive\", `Accept-Charset` = \"GB2312,utf-8;q=0.7,*;q=0.7\")\n    url_head <- \"http://ditu.amap.com/service/poiInfo?query_type=IDQ&id=\"\n    url <- paste(url_head, id, sep = \"\")\n    web <- getURL(url, encoding = \"utf-8\",httpHeader = myheader)\n    tmp <- unlist(strsplit(web, split = \"\\\\{\"))\n    N <- grep(tmp, pattern = \"roadaoi\")\n    aoi <- unlist(strsplit(tmp[N], \"\\\"\"))[4]\n    if(length(aoi)>0){\n            aoi0 <- unlist(strsplit(aoi, split = \"\\\\|\"))\n            geodata <- data.frame(matrix(rep(NA, 3), ncol = 3))\n            colnames(geodata) <- c(\"V1\", \"V2\", \"name\")\n            linedata <- data.frame(matrix(rep(NA, 2), ncol = 2))\n            colnames(linedata) <- c(\"origin\", \"destination\")\n            for (i in 1:length(aoi0)) {\n                    rec <- matrix(unlist(strsplit(aoi0[i], split = \"[_,]\")), ncol = 2,\n                                  byrow = T)\n\n                    if (tobaidu)\n                            rec <- geoconv(rec)\n                    geo_tmp <- mtx2geoData(mtx = rec, name = paste(name,i, \"line\", sep = \"\"))\n                    line_tmp <- mtx2lineData(mtx = rec, name = paste(name,i, \"line\", sep = \"\"))\n                    geodata <- rbind(geodata, geo_tmp)\n                    linedata <- rbind(linedata, line_tmp)\n                    geodata <- na.omit(geodata)\n                    linedata <- na.omit(linedata)\n            }\n    }else{\n            geodata <- data.frame(matrix(rep(NA, 3), ncol = 3))\n            colnames(geodata) <- c(\"V1\", \"V2\", \"name\")\n            linedata <- data.frame(matrix(rep(NA, 2), ncol = 2))\n            colnames(linedata) <- c(\"origin\", \"destination\")\n    }\n\n\n    return(data = list(geodata = geodata, linedata = linedata))\n}\n",
+    "created" : 1483965683178.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "20|68|58|0|\n",
+    "hash" : "3734824820",
+    "id" : "D6FBE270",
+    "lastKnownWriteTime" : 1483967437,
+    "last_content_update" : 1483967442104,
+    "path" : "C:/Users/dai_jl/Desktop/bamapr/R/getRoadCoor.R",
+    "project_path" : "R/getRoadCoor.R",
+    "properties" : {
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
